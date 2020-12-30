@@ -1,0 +1,67 @@
+---
+title: "Problem 8.4"
+author: Jonathan Pevsner, Bioinformatics and Functional Genomics  (August, 2015).
+  Modified by kd91 (Feb,2020)
+output: word_document
+---
+
+#### In this exercise we will use the R package GenomeGraphs in RStudio to plot the structure of the beta globin gene, and plot the position of this gene on an ideogram of chromosome 11.
+
+```{r}
+setwd(getwd())
+```
+
+#### Install GenomeGraphs and open its library.
+
+```{r prelim, cache=TRUE}
+# source("http://bioconductor.org/biocLite.R")
+# biocLite("GenomeGraphs")
+
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#     install.packages("BiocManager")
+# BiocManager::install(c("GenomicFeatures"))
+options(width=100)
+library(GenomeGraphs)
+```
+
+#### Use biomaRt to obtain a gene structure that we will plot.
+
+```{r mart, cache=TRUE}
+mart <- useMart("ensembl", dataset="hsapiens_gene_ensembl")
+gene <- makeGene(id = "ENSG00000128731", type="ensembl_gene_id", biomart = mart)
+gdPlot(gene) # save the output as Rplot1 (a .png file)
+
+#reference for herc2 gene: https://uswest.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=ENSG00000128731;r=15:28111040-28322172
+```
+
+#### Next plot transcripts associated with this gene. Save the output as Rplot2 (a .png file).
+
+```{r plot2, cache=TRUE}
+transcript <- makeTranscript(id = "ENSG00000128731", type="ensembl_gene_id", biomart = mart)
+gdPlot(list(gene, transcript))
+```
+
+#### Define the genomic region. The resulting plot has brown boxes for [exons] and genomic coordinates. Save it as Rplot3.
+
+```{r plot3, cache=TRUE}
+minusStrand <- makeGeneRegion(chromosome = 15, start = 28111040, end = 28322172, strand = "-", biomart = mart)
+genomeAxis <- makeGenomeAxis(add53 = TRUE) # Add53 shows 5' and 3' ends
+gdPlot(list(genomeAxis, minusStrand)) 
+```
+
+#### Add an ideogram of chromosome 15 to the plot.
+
+```{r plot23}
+minStrand <- makeGeneRegion( chromosome = 15, start = 28111040, end = 28111040, strand = "-", biomart = mart)
+ideogram <- makeIdeogram(chromosome = 15)
+genomeAxis <- makeGenomeAxis(add53=TRUE, add35=TRUE)
+gdPlot(list(ideogram, minusStrand, genomeAxis, minStrand)) 
+# save as Rplot4.png
+```
+
+
+#### Show the session information
+```{r}
+sessionInfo()
+```
+
