@@ -1,0 +1,265 @@
+---
+title: "Data Analysis for SNP's to look for associations with a phenotype "
+author: "kd91"
+date: "3/31/2020"
+output: word_document
+---
+
+```{r}
+
+setwd (getwd())
+
+library(ggplot2)
+library(pscl)
+
+snp <- read.csv("disease2a.csv", header = T)
+summary(snp)
+
+# correlation
+cor(snp, use = "pairwise.complete.obs", method = "spearman")
+# location5 has higher positive correlation (0.0646147922) with class than any other location variables.
+
+snp$class <- factor(snp$class)
+summary(snp)
+# summary statistics includes centrality measures - mean & median
+# except for class variable, it includes counts
+
+# vizualizations
+g <- ggplot(data=snp)
+
+#univariate plots
+g + geom_bar(aes(x=location1), fill = "slategrey")+ ggtitle("Distribution of snp's at location 1") +  
+  xlab("SNP's - location 1") + ylab("Count")
+# alleles (0 to 2) are in decreasing order of counts at location 1 of an snp
+
+g + geom_bar(aes(x=location2))+ ggtitle("Distribution of snp's at location 2") +  
+  xlab("SNP's - location 2") + ylab("Count")
+# alleles (0 to 2) are in decreasing order of counts at location 2 of an snp
+
+g + geom_bar(aes(x=location5), fill = "slategrey")+ ggtitle("Distribution of snp's at location 5") +  
+  xlab("SNP's - location 5") + ylab("Count")
+# allele - 1 has maxiumum counts at location 5. 0 & 1 are almost at similiar counts.
+
+g + geom_bar(aes(x=location10), fill = "skyblue")+ ggtitle("Distribution of snp's at location 3") +  
+  xlab("SNP's - location 10") + ylab("Count")
+# allele - 1 has maxiumum counts at location 10. 0 & 1 are almost at similiar counts.
+
+g + geom_bar(aes(x=factor(class)))+ ggtitle("Distribution of diseased(=1) and not diseased(=0)") +  
+  xlab("Not diseased(=0) and Diseased(=1)") + ylab("Count")
+# there are more observations which are classified as having the disease (=1) than others that don't have the disease(=0)
+
+#bivariate plots
+g + geom_bar(aes(x=location1, fill=factor(snp$class)))+ ggtitle("Distribution of snp's at location 1 vs diseased(=1) or not(=0)") +  
+  xlab("SNP's - location 1") + ylab("Count")
+# for alleles - 0,1 or 2, the class of disease or no disease assigned to them is almost half at snp location1
+
+g + geom_bar(aes(x=location2, fill=factor(snp$class)))+ ggtitle("Distribution of snp's at location 2 vs diseased(=1) or not(=0)") +  
+  xlab("SNP's - location 2") + ylab("Count")
+# for alleles - 0,1 or 2, the class of disease or no disease assigned to them is almost half at snp location2
+
+g + geom_bar(aes(x=location3, fill=factor(snp$class)))+ ggtitle("Distribution of snp's at location 3 vs diseased(=1) or not(=0)") +  
+  xlab("SNP's - location 3") + ylab("Count")
+# for alleles - 0,1 or 2, the class of disease or no disease assigned to them is almost half at snp location3
+
+g + geom_bar(aes(x=location4, fill=factor(snp$class)))+ ggtitle("Distribution of snp's at location 4 vs diseased(=1) or not(=0)") +  
+  xlab("SNP's - location 4") + ylab("Count")
+# for alleles - 0,1 or 2, the class of disease or no disease assigned to them is almost half at snp location4
+
+g + geom_bar(aes(x=location5, fill=factor(snp$class)))+ ggtitle("Distribution of snp's at location 5 vs diseased(=1) or not(=0)") +  
+  xlab("SNP's - location 5") + ylab("Count")
+# for alleles - 0,1 or 2, the class of disease or no disease assigned to them is almost half at snp location5
+# allele = 1 is higher in count than 0 & 2, for location 5
+
+g + geom_bar(aes(x=location6, fill=factor(snp$class)))+ ggtitle("Distribution of snp's at location 6 vs diseased(=1) or not(=0)") +  
+  xlab("SNP's - location 6") + ylab("Count")
+# for alleles - 0,1 or 2, the class of disease or no disease assigned to them is almost half at snp location6
+# for alleles - 1, the count is high than in other locations and almost equal to count of allele=0
+
+g + geom_bar(aes(x=location7, fill=factor(snp$class)))+ ggtitle("Distribution of snp's at location 7 vs diseased(=1) or not(=0)") +  
+  xlab("SNP's - location 7") + ylab("Count")
+# for alleles - 0,1 or 2, the class of disease or no disease assigned to them is almost half at snp location7
+
+g + geom_bar(aes(x=location8, fill=factor(snp$class)))+ ggtitle("Distribution of snp's at location 8 vs diseased(=1) or not(=0)") +  
+  xlab("SNP's - location 8") + ylab("Count")
+# for alleles - 0,1 or 2, the class of disease or no disease assigned to them is almost half at snp location8
+
+g + geom_bar(aes(x=location9, fill=factor(snp$class)))+ ggtitle("Distribution of snp's at location 9 vs diseased(=1) or not(=0)") +  
+  xlab("SNP's - location 9") + ylab("Count")
+# for alleles - 0,1 or 2, the class of disease or no disease assigned to them is almost half at snp location9
+
+g + geom_bar(aes(x=location10, fill=factor(snp$class)))+ ggtitle("Distribution of snp's at location 10 vs diseased(=1) or not(=0)") +  
+  xlab("SNP's - location 10") + ylab("Count")
+# for alleles - 0,1 or 2, the class of disease or no disease assigned to them is almost half at snp location10
+# allele with 1 mutation is more than allele with 0 or 2 mutations at this location
+
+###############################################################################################################
+# main effects only model
+fit1_full <- glm(class ~ ., family = binomial(), data=snp)
+summary(fit1_full)
+# Null deviance: 2767.6  on 1999  degrees of freedom
+# Residual deviance: 2747.6  on 1989  degrees of freedom
+# AIC: 2769.6
+# location5 and 10 are significant
+
+fit_null <- glm(class ~ 1, family = binomial(), data=snp)
+summary(fit_null)
+# AIC: 2769.6
+
+fit1_step = step(fit_null, scope=list(lower=fit_null, upper=fit1_full),direction="both")
+summary(fit1_step)
+#  Null deviance: 2767.6  on 1999  degrees of freedom
+# Residual deviance: 2750.8  on 1996  degrees of freedom
+# AIC: 2758.8
+# includes variables - location5, location10, location1
+# location5 and 10 are significant
+
+fit1_final <- glm(class ~ location5 + location10, family = binomial(), data=snp)
+summary(fit1_final)
+# both the predictors are statistifically significant and have their p-values less than threshold of 0.05
+#### AIC: 2759.4 ####
+pR2(fit1_final)
+#           llh       llhNull            G2      McFadden          r2ML          r2CU 
+# -1.376684e+03 -1.383793e+03  1.421848e+01  5.137500e-03  7.084027e-03  9.453260e-03 
+plot(fit1_final, 1)
+plot(fit1_final, 5)
+# residual plots do not show a good fit for this model
+plot(x=snp$class,y=predict(fit1_final),xlab="actual",ylab="predicted")
+# the model predicts not having the disease (actual=0) more precisely than being able to predict having the disease(actual=1)
+# the accuracy of the model is not that good for predicting class of the disease
+
+# interpreting the coefficients:
+# class = 0.27253*location5 + 0.18195*location10  - 0.35323
+# For every 1 allele increase in location5, the log odds of having the disease
+# increases by 0.27253 on average, when all other variables in the model are held constant
+# For every 1 allele increase in location10, the log odds of having the disease
+# increases by 0.18195 on average, when all other variables in the model are held constant
+exp(fit1_final$coef)
+# For every one allele increase in location5 the odds of having the disease is
+# multiplied by 1.3132767 (exp(coef)= 1.3132767) on average,
+# when all other variables in the model are held constant
+# For every one allele increase in location10 the odds of having the disease is
+# multiplied by 1.1995492 (exp(coef)= 1.1995492) on average,
+# when all other variables in the model are held constant
+###############################################################################################################
+# 2nd order interactions only model
+fit2_full <- glm(class ~ (.)^2 - (.), family = binomial(), data=snp)
+summary(fit2_full)
+# Null deviance: 2767.6  on 1999  degrees of freedom
+# Residual deviance: 2559.8  on 1954  degrees of freedom
+# AIC: 2651.8
+# many interactions are significant
+
+fit2_step = step(fit_null, scope=list(lower=fit_null, upper=fit2_full),direction="both")
+summary(fit2_step)
+# Null deviance: 2767.6  on 1999  degrees of freedom
+# Residual deviance: 2571.0  on 1972  degrees of freedom
+# AIC: 2627
+
+# significant interactions are: location5:location10 + location5:location6 + 
+#  location10:location2 + location5:location7 + location6:location7 + 
+#  location10:location3 + location7:location3 + location10:location7 + 
+#  location10:location4 + location4:location1 + location5:location3 + 
+#  location6:location2 + location10:location6 + location5:location9 + 
+#  location6:location9 + location3:location1 + location10:location1 + 
+#  location5:location4 + location6:location4 + location2:location1 + 
+#  location5:location2 + location5:location8 + location7:location8 + 
+#  location3:location8 + location10:location8 + location5:location1 + 
+#  location1:location8
+
+# removing location1:location8 from fit2_step
+fit2_final <- glm(class ~ location5:location10 + location5:location6 + location10:location2 + location5:location7 + 
+                    location6:location7 + location10:location3 + location7:location3 + location10:location7 + 
+                    location10:location4 + location4:location1 + location5:location3 + 
+                    location6:location2 + location10:location6 + location5:location9 + 
+                    location6:location9 + location3:location1 + location10:location1 + 
+                    location5:location4 + location6:location4 + location2:location1 + 
+                    location5:location2 + location5:location8 + location7:location8 + 
+                    location3:location8 + location10:location8 + location5:location1, family = binomial(), data=snp)
+summary(fit2_final)
+# shows many interactions that are significant
+#### AIC: 2627.1 ####
+pR2(fit2_final)
+#           llh       llhNull            G2      McFadden          r2ML          r2CU 
+# -1.286530e+03 -1.383793e+03  1.945272e+02  7.028765e-02  9.268318e-02  1.236808e-01 
+plot(fit2_final, 1)
+plot(fit2_final, 5)
+# the residual plots signifies that this model is not a very good fit
+# the values are not randomly distributed above and below the regression line
+plot(x=snp$class,y=predict(fit2_final),xlab="actual",ylab="predicted")
+# the predicted values for having the disease (class=1) has a median higher than the values with no disease (class=0)
+
+###############################################################################################################
+# full model - main effects and 2nd order interactions model
+fit3_full <- glm(class ~ (.)^2, family = binomial(), data=snp)
+summary(fit3_full)
+# Null deviance: 2767.6  on 1999  degrees of freedom
+# Residual deviance: 2431.2  on 1944  degrees of freedom
+# AIC: 2543.2
+# significant variables: location4, 5,10 
+# significant interactions: location1:location4, location1:location5, location4:location10, location5:location10,
+# location7:location8, location7:location9, location9:location10
+
+fit3_step = step(fit_null, scope=list(lower=fit_null, upper=fit3_full),direction="both")
+summary(fit3_step)
+# significant variables are : location5, location10, location6, location1, location5:location10, location5:location1
+#  Null deviance: 2767.6  on 1999  degrees of freedom
+# Residual deviance: 2482.4  on 1993  degrees of freedom
+# AIC: 2496.4
+
+# removing location1 from fit3_step
+fit3_final <- glm(class ~ location5 + location10 + location6 + location5:location10 + location5:location1, 
+                  family = binomial(), data=snp)
+summary(fit3_final)
+# significant variables are location5, location10, location6, location5:location10, location5:location1
+#### AIC: 2495.5 ####
+pR2(fit3_final)
+# llh           llhNull            G2          McFadden          r2ML          r2CU 
+# -1241.7350827 -1383.7933184   284.1164715     0.1026586     0.1324293     0.1767199 
+plot(fit3_final, 1)
+plot(fit3_final, 5)
+# the residual vs leverage plot shows a good fit of the model
+# the regression line is close to the fit line and the values are distributed randomly above & below the fit line
+plot(x=snp$class,y=predict(fit3_final),xlab="actual",ylab="predicted", main="Predicted vs Actual")
+# this plot shows that the median for having the disease(actual=1) is higher than not having the disease(actual=0)
+# the inter-quartile range (IQR) for no disease vs disease is also very different
+# IQR for not having the disease is much lower than IQR for having the disease
+
+# interpreting the coefficients:
+# class = 2.03695*location5 +  1.89472*location10 + 0.12433*location6 - 1.63631*location5:location10 - 0.15451*location5:location1 - 2.43541
+# For every 1 allele increase in location5, the log odds of having the disease
+# increases by 2.03695 on average, when all other variables in the model are held constant
+# For every 1 allele increase in location10, the log odds of having the disease
+# increases by 1.89472 on average, when all other variables in the model are held constant
+# For every 1 allele increase in location6, the log odds of having the disease
+# increases by 0.12433 on average, when all other variables in the model are held constant
+# For every 1 unit increase in the product of location5 & location10, the log odds of having the disease
+# decreases by 1.63631 on average, when all other variables in the model are held constant
+# For every 1 unit increase in the product of location5 & location1, the log odds of having the disease
+# decreases by 0.15451 on average, when all other variables in the model are held constant
+exp(fit3_final$coef)
+# For every one allele increase in location5 the odds of having the disease is
+# multiplied by 7.66719979 on average,
+# when all other variables in the model are held constant
+# For every one allele increase in location10 the odds of having the disease is
+# multiplied by 6.65070378 on average,
+# when all other variables in the model are held constant
+# For every one allele increase in location6 the odds of having the disease is
+# multiplied by 1.13239421 on average,
+# when all other variables in the model are held constant
+# For every one allele increase in the product of location5 and location10, the odds of having the disease is
+# multiplied by 0.19469705 on average,
+# when all other variables in the model are held constant
+# For every one allele increase in the product of location5 and location1, the odds of having the disease is
+# multiplied by 0.85683469 on average,
+# when all other variables in the model are held constant
+
+###############################################################################################################
+# final best model:
+# fit3_final (final full model with main effects and 2nd order interactions model) is the best model among the three above 
+# it has the lowest AIC among all three models above (fit1_final, fit2_final and fit3_final)
+# fit3_final also has few variables in the model and are all significant
+# it's Mcfadden's R2 value is also the highest (0.1026586) among the three models
+# the residuals vs leverage plot also indicates a good fit model
+
+
+```
